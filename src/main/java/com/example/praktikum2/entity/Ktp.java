@@ -10,8 +10,8 @@ import java.util.Date;
 @Data
 public class Ktp {
 
-  
-
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
 }
