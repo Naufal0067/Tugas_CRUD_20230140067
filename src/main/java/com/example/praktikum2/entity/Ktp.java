@@ -17,5 +17,8 @@ public class Ktp {
     @Column(name = "nomor_ktp", unique = true)
     private String nomorKtp;
 
+    @Column(name = "nama_lengkap")
+    private String namaLengkap;
+
 
 }
