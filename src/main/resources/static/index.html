@@ -8,30 +8,32 @@
     <style>
 
         body{
-        font-family:Arial;
-        background:#f4f6f9;
-        padding:40px;
+            font-family: Arial;
+            background:#f4f6f9;
+            padding:40px;
         }
 
         .container{
-        width:900px;
-        margin:auto;
-        background:white;
-        padding:20px;
-        border-radius:10px;
+            width:900px;
+            margin:auto;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
         }
 
         input,select{
-        width:100%;
-        padding:8px;
-        margin:5px 0;
+            width:100%;
+            padding:8px;
+            margin:5px 0;
         }
 
         button{
-        padding:8px 12px;
-        margin:5px;
-        border:none;
-        cursor:pointer;
+            padding:8px 12px;
+            margin:5px;
+            border:none;
+            cursor:pointer;
+            border-radius:5px;
         }
 
         .btn-save{background:#2ecc71;color:white;}
@@ -39,15 +41,19 @@
         .btn-delete{background:#e74c3c;color:white;}
 
         table{
-        width:100%;
-        border-collapse:collapse;
-        margin-top:20px;
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
         }
 
         th,td{
-        border:1px solid #ddd;
-        padding:10px;
-        text-align:center;
+            border:1px solid #ddd;
+            padding:10px;
+            text-align:center;
+        }
+
+        th{
+            background:#f2f2f2;
         }
 
     </style>
@@ -105,152 +111,151 @@
 
 <script>
 
-    const API = "http://localhost:8080/ktp"
+    const API = "/api/ktp"
 
     $(document).ready(function(){
-    loadData()
+        loadData()
     })
 
     function loadData(){
 
-    $.get(API,function(res){
+        $.get(API,function(res){
 
-    let html=""
+            let html=""
 
-    res.data.forEach(function(d){
+            if(res.data && res.data.length > 0){
 
-    html+=`
-    <tr>
+                res.data.forEach(function(d){
 
-    <td>${d.id}</td>
-    <td>${d.nomorKtp}</td>
-    <td>${d.namaLengkap}</td>
-    <td>${d.alamat}</td>
+                    html+=`
+                    <tr>
+                        <td>${d.id}</td>
+                        <td>${d.nomorKtp}</td>
+                        <td>${d.namaLengkap}</td>
+                        <td>${d.alamat}</td>
 
-    <td>
+                        <td>
+                            <button class="btn-edit" onclick="editData(${d.id})">Edit</button>
+                            <button class="btn-delete" onclick="deleteData(${d.id})">Delete</button>
+                        </td>
+                    </tr>
+                    `
 
-    <button class="btn-edit" onclick="editData(${d.id})">Edit</button>
+                })
 
-    <button class="btn-delete" onclick="deleteData(${d.id})">Delete</button>
+            }else{
+                html = `<tr><td colspan="5">Data kosong</td></tr>`
+            }
 
-    </td>
+            $("#tableData").html(html)
 
-    </tr>
-    `
-
-    })
-
-    $("#tableData").html(html)
-
-    })
+        })
 
     }
 
     function saveData(){
 
-    let id=$("#id").val()
+        let id=$("#id").val()
 
-    let data={
+        let data={
 
-    nomorKtp:$("#nomorKtp").val(),
-    namaLengkap:$("#namaLengkap").val(),
-    alamat:$("#alamat").val(),
-    tanggalLahir:$("#tanggalLahir").val(),
-    jenisKelamin:$("#jenisKelamin").val()
+            nomorKtp:$("#nomorKtp").val(),
+            namaLengkap:$("#namaLengkap").val(),
+            alamat:$("#alamat").val(),
+            tanggalLahir:$("#tanggalLahir").val(),
+            jenisKelamin:$("#jenisKelamin").val()
 
-    }
+        }
 
-    if(id){
+        if(id){
 
-    $.ajax({
+            $.ajax({
 
-    url:API+"/"+id,
-    type:"PUT",
-    contentType:"application/json",
-    data:JSON.stringify(data),
+                url:API+"/"+id,
+                type:"PUT",
+                contentType:"application/json",
+                data:JSON.stringify(data),
 
-    success:function(){
+                success:function(){
 
-    alert("Data berhasil diupdate")
+                    alert("Data berhasil diupdate")
+                    clearForm()
+                    loadData()
 
-    clearForm()
-    loadData()
+                }
 
-    }
+            })
 
-    })
+        }else{
 
-    }else{
+            $.ajax({
 
-    $.ajax({
+                url:API,
+                type:"POST",
+                contentType:"application/json",
+                data:JSON.stringify(data),
 
-    url:API,
-    type:"POST",
-    contentType:"application/json",
-    data:JSON.stringify(data),
+                success:function(){
 
-    success:function(){
+                    alert("Data berhasil ditambahkan")
+                    clearForm()
+                    loadData()
 
-    alert("Data berhasil ditambahkan")
+                }
 
-    clearForm()
-    loadData()
+            })
 
-    }
-
-    })
-
-    }
+        }
 
     }
 
     function editData(id){
 
-    $.get(API+"/"+id,function(res){
+        $.get(API+"/"+id,function(res){
 
-    let d=res.data
+            let d=res.data
 
-    $("#id").val(d.id)
-    $("#nomorKtp").val(d.nomorKtp)
-    $("#namaLengkap").val(d.namaLengkap)
-    $("#alamat").val(d.alamat)
-    $("#tanggalLahir").val(d.tanggalLahir)
-    $("#jenisKelamin").val(d.jenisKelamin)
+            $("#id").val(d.id)
+            $("#nomorKtp").val(d.nomorKtp)
+            $("#namaLengkap").val(d.namaLengkap)
+            $("#alamat").val(d.alamat)
+            $("#tanggalLahir").val(d.tanggalLahir)
+            $("#jenisKelamin").val(d.jenisKelamin)
 
-    })
+        })
 
     }
 
     function deleteData(id){
 
-    if(confirm("Yakin ingin menghapus data?")){
+        if(confirm("Yakin ingin menghapus data?")){
 
-    $.ajax({
+            $.ajax({
 
-    url:API+"/"+id,
-    type:"DELETE",
+                url:API+"/"+id,
+                type:"DELETE",
 
-    success:function(){
+                success:function(){
 
-    alert("Data berhasil dihapus")
-    loadData()
+                    alert("Data berhasil dihapus")
+                    loadData()
 
-    }
+                }
 
-    })
+            })
 
-    }
+        }
 
     }
 
     function clearForm(){
 
-    $("#id").val("")
-    $("#nomorKtp").val("")
-    $("#namaLengkap").val("")
-    $("#alamat").val("")
-    $("#tanggalLahir").val("")
-    $("#jenisKelamin").val("Laki-laki")
+        $("#id").val("")
+        $("#nomorKtp").val("")
+        $("#namaLengkap").val("")
+        $("#alamat").val("")
+        $("#tanggalLahir").val("")
+        $("#jenisKelamin").val("Laki-laki")
 
     }
 
