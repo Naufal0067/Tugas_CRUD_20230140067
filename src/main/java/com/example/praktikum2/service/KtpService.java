@@ -10,6 +10,10 @@ public interface KtpService {
 
     List<KtpDto> getAll();
 
+    KtpDto getById(Integer id);
 
+    KtpDto update(Integer id, KtpDto dto);
+
+    void delete(Integer id);
 
 }
