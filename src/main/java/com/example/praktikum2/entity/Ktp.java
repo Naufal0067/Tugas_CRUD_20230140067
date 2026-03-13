@@ -20,5 +20,8 @@ public class Ktp {
     @Column(name = "nama_lengkap")
     private String namaLengkap;
 
+    private String alamat;
+
+
 
 }
