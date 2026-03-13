@@ -14,4 +14,8 @@ public class Ktp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "nomor_ktp", unique = true)
+    private String nomorKtp;
+
+
 }
