@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manajemen Data KTP</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+
+        body{
+        font-family:Arial;
+        background:#f4f6f9;
+        padding:40px;
+        }
+
+        .container{
+        width:900px;
+        margin:auto;
+        background:white;
+        padding:20px;
+        border-radius:10px;
+        }
+
+        input,select{
+        width:100%;
+        padding:8px;
+        margin:5px 0;
+        }
+
+        button{
+        padding:8px 12px;
+        margin:5px;
+        border:none;
+        cursor:pointer;
+        }
+
+        .btn-save{background:#2ecc71;color:white;}
+        .btn-edit{background:#f1c40f;}
+        .btn-delete{background:#e74c3c;color:white;}
+
+        table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+        }
+
+        th,td{
+        border:1px solid #ddd;
+        padding:10px;
+        text-align:center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Manajemen Data KTP</h2>
+
+    <input type="hidden" id="id">
+
+    <label>Nomor KTP</label>
+    <input type="text" id="nomorKtp">
+
+    <label>Nama Lengkap</label>
+    <input type="text" id="namaLengkap">
+
+    <label>Alamat</label>
+    <input type="text" id="alamat">
+
+    <label>Tanggal Lahir</label>
+    <input type="date" id="tanggalLahir">
+
+    <label>Jenis Kelamin</label>
+    <select id="jenisKelamin">
+        <option value="Laki-laki">Laki-laki</option>
+        <option value="Perempuan">Perempuan</option>
+    </select>
+
+    <button class="btn-save" onclick="saveData()">Simpan</button>
+    <button onclick="clearForm()">Reset</button>
+
+    <h3>Data KTP</h3>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nomor KTP</th>
+            <th>Nama</th>
+            <th>Alamat</th>
+            <th>Aksi</th>
+        </tr>
+        </thead>
+
+        <tbody id="tableData"></tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const API = "http://localhost:8080/ktp"
+
+    $(document).ready(function(){
+    loadData()
+    })
+
+    function loadData(){
+
+    $.get(API,function(res){
+
+    let html=""
+
+    res.data.forEach(function(d){
+
+    html+=`
+    <tr>
+
+    <td>${d.id}</td>
+    <td>${d.nomorKtp}</td>
+    <td>${d.namaLengkap}</td>
+    <td>${d.alamat}</td>
+
+    <td>
+
+    <button class="btn-edit" onclick="editData(${d.id})">Edit</button>
+
+    <button class="btn-delete" onclick="deleteData(${d.id})">Delete</button>
+
+    </td>
+
+    </tr>
+    `
+
+    })
+
+    $("#tableData").html(html)
+
+    })
+
+    }
+
+    function saveData(){
+
+    let id=$("#id").val()
+
+    let data={
+
+    nomorKtp:$("#nomorKtp").val(),
+    namaLengkap:$("#namaLengkap").val(),
+    alamat:$("#alamat").val(),
+    tanggalLahir:$("#tanggalLahir").val(),
+    jenisKelamin:$("#jenisKelamin").val()
+
+    }
+
+    if(id){
+
+    $.ajax({
+
+    url:API+"/"+id,
+    type:"PUT",
+    contentType:"application/json",
+    data:JSON.stringify(data),
+
+    success:function(){
+
+    alert("Data berhasil diupdate")
+
+    clearForm()
+    loadData()
+
+    }
+
+    })
+
+    }else{
+
+    $.ajax({
+
+    url:API,
+    type:"POST",
+    contentType:"application/json",
+    data:JSON.stringify(data),
+
+    success:function(){
+
+    alert("Data berhasil ditambahkan")
+
+    clearForm()
+    loadData()
+
+    }
+
+    })
+
+    }
+
+    }
+
+    function editData(id){
+
+    $.get(API+"/"+id,function(res){
+
+    let d=res.data
+
+    $("#id").val(d.id)
+    $("#nomorKtp").val(d.nomorKtp)
+    $("#namaLengkap").val(d.namaLengkap)
+    $("#alamat").val(d.alamat)
+    $("#tanggalLahir").val(d.tanggalLahir)
+    $("#jenisKelamin").val(d.jenisKelamin)
+
+    })
+
+    }
+
+    function deleteData(id){
+
+    if(confirm("Yakin ingin menghapus data?")){
+
+    $.ajax({
+
+    url:API+"/"+id,
+    type:"DELETE",
+
+    success:function(){
+
+    alert("Data berhasil dihapus")
+    loadData()
+
+    }
+
+    })
+
+    }
+
+    }
+
+    function clearForm(){
+
+    $("#id").val("")
+    $("#nomorKtp").val("")
+    $("#namaLengkap").val("")
+    $("#alamat").val("")
+    $("#tanggalLahir").val("")
+    $("#jenisKelamin").val("Laki-laki")
+
+    }
+
+</script>
+
+</body>
+</html>
