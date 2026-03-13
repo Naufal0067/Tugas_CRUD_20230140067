@@ -22,6 +22,10 @@ public class Ktp {
 
     private String alamat;
 
+    @Column(name = "tanggal_lahir")
+    private Date tanggalLahir;
 
+    @Column(name = "jenis_kelamin")
+    private String jenisKelamin;
 
 }
